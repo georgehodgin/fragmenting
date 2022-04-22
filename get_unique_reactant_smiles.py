@@ -17,7 +17,7 @@ def main():
     infile = input("Please enter the name of the input file")
     outfile = input("Please enter the name of the output file")
     
-    get_smiles(infile).to_csv(outfile)    
+    get_smiles(infile).to_csv(outfile)
     
 def get_smiles(infile):
     
@@ -25,8 +25,8 @@ def get_smiles(infile):
     
     # Put in reactants as individual column
     data['Reactants'] = data['Reaction'].str.split(">>",
-                                                         n=1,
-                                                         expand=True)[0]
+                                                   n=1,
+                                                   expand=True)[0]
     # Split the reactants into individual molecules
     split_smiles = [i.split('.')for i in data['Reactants']]
     
