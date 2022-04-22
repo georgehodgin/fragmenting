@@ -23,6 +23,7 @@ from rdkit.Chem import PandasTools
 from rdkit.Chem import AllChem
 import pandas as pd
 import numpy as np
+import re
 
 
 def main():
@@ -35,6 +36,22 @@ def main():
     ecfp_df = pd.DataFrame(compute_ecfp_descriptors(fragment_smiles))
     
     ecfp_df.to_csv(outfile, index=False)
+    
+    
+def _prune_BRICS_frags(fragment_smiles):
+    
+    fragments_df = pd.DataFrame(fragment_smiles, columns=['SMILES'])
+    
+    # get rid of fragments which couldn't be decomposed
+    weird_mols = []
+    for i in fragment_smiles:
+        z = re.compile("\[\d\*\]|\[\d\d\*\]")
+        if not re.match(z, i):
+            weird_mols.append(i)
+            
+    only_frags_df = fragments_df[~fragments_df['SMILES'].isin(weird_mols)]
+    
+    return only_frags_df['SMILES'].to_list()    
 
 def _compute_single_ecfp_descriptor(smiles):
     
@@ -101,7 +118,7 @@ def get_BRICS_frags(input_file):
             fragments += res_all
         except:
             pass
-    return set(fragments)
+    return _prune_BRICS_frags(set(fragments))
 
 
     
