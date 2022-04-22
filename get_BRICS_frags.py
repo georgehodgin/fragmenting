@@ -28,19 +28,13 @@ import numpy as np
 def main():
 
     # Import csv file and input name for output file
-    input_file = input("Enter input file name")
-    outfile = input("Enter output file name")
+    input_file = input("Enter input file name: ")
+    outfile = input("Enter output file name: ")
+    
     fragment_smiles = get_BRICS_frags(input_file)
     ecfp_df = pd.DataFrame(compute_ecfp_descriptors(fragment_smiles))
-    ecfp_df.insert(loc=0,
-                   column='Smiles',
-                   value=fragment_smiles)
     
-    ecfp_df.insert(loc=1,
-                   column='label',
-                   value='BRICS fragment')
-    
-    ecfp.to_csv(outfile, index=False)
+    ecfp_df.to_csv(outfile, index=False)
 
 def _compute_single_ecfp_descriptor(smiles):
     
@@ -70,8 +64,17 @@ def compute_ecfp_descriptors(smiles_list):
         if ecfp is not None:
             keep_idx.append(i)
             descriptors.append(ecfp)
-
-    return np.vstack(descriptors), keep_idx
+    df = pd.DataFrame(smiles_list)
+    kept_frags = df.iloc[keep_idx]
+    fp_df = pd.DataFrame(np.vstack(descriptors))
+    fp_df.insert(loc=0,
+                 column='Smiles',
+                 value=kept_frags)
+    fp_df.insert(loc=1,
+                   column='label',
+                   value='BRICS fragment')
+    
+    return fp_df
 
 def get_BRICS_frags(input_file):
     
@@ -92,13 +95,13 @@ def get_BRICS_frags(input_file):
     fragments = []
     for m in data['Molecule']:
         try:
-        res_all = list(Chem.BRICS.BRICSDecompose(m, silent=True,
-                                                 keepNonLeafNodes=False,
-                                                 returnMols=False))
-        fragments += res_all
+            res_all = list(Chem.BRICS.BRICSDecompose(m, silent=True,
+                                                     keepNonLeafNodes=False,
+                                                     returnMols=False))
+            fragments += res_all
         except:
             pass
-    return fragments
+    return set(fragments)
 
 
     
