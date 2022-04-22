@@ -24,11 +24,11 @@ def get_smiles(infile):
     data = pd.read_csv(infile)
     
     # Put in reactants as individual column
-    dataset['Reactants'] = dataset['Reaction'].str.split(">>",
+    data['Reactants'] = data['Reaction'].str.split(">>",
                                                          n=1,
                                                          expand=True)[0]
     # Split the reactants into individual molecules
-    split_smiles = [i.split('.')for i in dataset['Reactants']]
+    split_smiles = [i.split('.')for i in data['Reactants']]
     
     # combine all the molecules and remove duplicates
     set_smiles = {n for row in split_smiles for n in row}
