@@ -32,7 +32,7 @@ def main():
     
     faerun = Faerun(view="front", coords=False)
     faerun.add_scatter(
-        "BRICS_fragments",
+        "BRICS_fragments_chemical_space_plot",
         {   "x": x, 
             "y": y, 
             "c": df['label'].to_list(), 
