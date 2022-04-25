@@ -52,7 +52,7 @@ def main():
                     {"from": s, "to": t},
                     point_helper="BRICS_fragments")
     
-    faerun.plot("BRICS_fragments", template="smiles")
+    faerun.plot("BRICS_fragments_chemical_space_plot", template="smiles")
     
 
 def _combine_dataframes(infile1, infile2):
