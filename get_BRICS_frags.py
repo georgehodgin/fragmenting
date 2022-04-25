@@ -5,8 +5,8 @@ Created on Fri Apr 22 10:30:21 2022
 
 Takes unique reactant SMILES and generates BRICS fragments.
 
-Returns CSV files containing BRICS frags as SMILES and their MHFP and ECFP4
-fingerprints in an array. -just ecfp4 in this version.
+Returns CSV files containing BRICS frags as SMILES and their MHFP (512)
+and ECFP4 fingerprints in an array. -just ecfp4 in this version.
 
 Also returns the molecules which couldn't be broken down by the 
 BRICS algorithm. - not yet
@@ -24,20 +24,58 @@ from rdkit.Chem import AllChem
 import pandas as pd
 import numpy as np
 import re
-
+from mhfp.encoder import MHFPEncoder
+import tmap
 
 def main():
 
     # Import csv file and input name for output file
     input_file = input("Enter input file name: ")
-    outfile = input("Enter output file name: ")
     
     fragment_smiles = get_BRICS_frags(input_file)
     ecfp_df = pd.DataFrame(compute_ecfp_descriptors(fragment_smiles))
+    ecfp_df.to_csv("ECFP4_BRICS_frags.csv", index=False)
     
-    ecfp_df.to_csv(outfile, index=False)
+    mhfp_df = pd.DataFrame(compute_mhfp_descriptors(fragment_smiles))
+    mhfp_df.to_csv("MHFP_BRICS_frags.csv", index=False)
     
+def _compute_single_mhfp_descriptor(smiles):
+    # The number of permutations used by the MinHashing algorithm
+    perm = 512
     
+    # Initializing the MHFP encoder with 512 permutations
+    enc = MHFPEncoder(perm)
+    # Create MHFP fingerprints from SMILES
+    # The fingerprint vectors have to be of the tm.VectorUint data type
+    # Will import them as numpy arrays for consistency and change type
+    fp = tmap.VectorUint(enc.encode(smiles))
+    fp_array = np.array(fp)
+    return fp_array
+
+def compute_mhfp_descriptors(smiles_list):
+    
+    """ Computes ecfp descriptors  for list of SMILES"""
+
+    keep_idx = []
+    descriptors = []
+    for i, smiles in enumerate(smiles_list):
+        mhfp = _compute_single_mhfp_descriptor(smiles)
+        if mhfp is not None:
+            keep_idx.append(i)
+            descriptors.append(mhfp)
+    df = pd.DataFrame(smiles_list)
+    kept_frags = df.iloc[keep_idx]
+    fp_df = pd.DataFrame(np.vstack(descriptors))
+    fp_df.insert(loc=0,
+                 column='Smiles',
+                 value=kept_frags)
+    fp_df.insert(loc=1,
+                   column='label',
+                   value='BRICS fragment')
+    
+    return fp_df  
+
+
 def _prune_BRICS_frags(fragment_smiles):
     
     fragments_df = pd.DataFrame(fragment_smiles, columns=['SMILES'])
