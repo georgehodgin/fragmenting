@@ -50,7 +50,7 @@ def main():
     
     faerun.add_tree("BRICS_fragments_Basic_tree",
                     {"from": s, "to": t},
-                    point_helper="BRICS_fragments_chemical_space_plot"")
+                    point_helper="BRICS_fragments_chemical_space_plot")
     
     faerun.plot("BRICS_fragments_chemical_space_plot", template="smiles")
     
