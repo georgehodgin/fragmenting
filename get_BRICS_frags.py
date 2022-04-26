@@ -6,7 +6,7 @@ Created on Fri Apr 22 10:30:21 2022
 Takes unique reactant SMILES and generates BRICS fragments.
 
 Returns CSV files containing BRICS frags as SMILES and their MHFP (512)
-and ECFP4 fingerprints in an array. -just ecfp4 in this version.
+and ECFP4 fingerprints in an array.
 
 Also returns the molecules which couldn't be broken down by the 
 BRICS algorithm. - not yet
