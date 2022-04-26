@@ -19,6 +19,7 @@ import pandas as pd
 from sklearn.cluster import MiniBatchKMeans
 import math
 from scipy.spatial.distance import cdist
+import matplotlib.pyplot as plt
 
 
 def main():
@@ -62,8 +63,22 @@ def main():
     reactant_counts_df = count_df[count_df["label"] == 0]
     reactant_counts_df['% of all reactants'] = (reactant_counts_df['Count']
                                                / reactant_counts_df['Count'].sum())*100
-
-    return frag_counts_df.to_csv(
+    
+    frag_counts_df.plot(kind="bar",
+                    x="Cluster",
+                    y="% of all frags",
+                    title="Fragment distribution",
+                    ylabel="% of total fragments")
+    plt.savefig("k-means_30_frag_plot.png")
+    
+    reactant_counts_df.plot(kind="bar",
+                    x="Cluster",
+                    y="% of all reactants",
+                    title="Reactant distribution",
+                    ylabel="% of total reactants")
+    plt.savefig("k-means_30_reactant_plot.png")
+    
+    return( frag_counts_df.to_csv(
         'frag_counts_k-means_c{}.csv'
                                  .format(
                                      str(
@@ -71,7 +86,7 @@ def main():
                                          'reactant_counts_k-means_c{}.csv'
                                          .format(
                                              str(
-                                             num_clusters)), index=False)
+                                             num_clusters)), index=False))
 
 def _combine_dataframes(infile1, infile2):
     """takes input file names and returns combined dataframe """
