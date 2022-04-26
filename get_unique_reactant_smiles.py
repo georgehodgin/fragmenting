@@ -14,8 +14,7 @@ import pandas as pd
 
 def main():
     
-    infile = input("Please enter the name of the input file")
-    outfile = input("Please enter the name of the output file")
+    infile, outfile = map(str, input("infile.csv outfile.csv: ").split())
     
     get_smiles(infile).to_csv(outfile)
     
